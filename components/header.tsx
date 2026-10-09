@@ -1,31 +1,52 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
-import { DarkModeToggle } from "./dark-mode-toggle";
-import { cn } from "@/lib/utils";
-import { Logo } from "./logo";
-
+import { Logo } from "./logo"
+import { Button } from "./ui/button"
+import { DarkModeToggle } from "./dark-mode-toggle"
+import { SignedIn, SignedOut, useAuth, UserButton } from "@insforge/nextjs"
+import { Spinner } from "./ui/spinner"
+import { AuthModal } from "./auth-modal"
 
 const Header = () => {
   const pathname = usePathname()
-  
-  const isProjectpage = pathname?.startsWith('/project') ?? false;
+  const { isLoaded } = useAuth();
 
-  
+  const isProjectPage = pathname.startsWith('/project/')
 
   return (
     <header className="w-full">
-      <div
-        className={cn(
-          "w-full flex py-3.5 px-8 items-center justify-between",
-          isProjectpage && "absolute top-0 z-50 px-2 py-1 right-0 w-auto"
-        )}
-      >
+      <div className={cn(`w-full flex py-3.5 px-8
+         items-center justify-between
+         `,
+        isProjectPage && "absolute top-0 z-50 px-2 py-1 right-0 w-auto"
+      )}>
+
         <div>
-          {!isProjectpage && <Logo />}
+          {!isProjectPage && <Logo />}
         </div>
+
         <div className="flex items-center justify-end gap-3">
           <DarkModeToggle />
+
+          {!isLoaded ? <Spinner className="w-8 h-8" /> : (
+            <>
+              <SignedOut>
+                <AuthModal mode="sign-in" triggerText="Login" triggerVariant="outline" />
+                <AuthModal mode="sign-up" triggerText="Sign up" triggerVariant="default" />
+              </SignedOut>
+
+              <SignedIn>
+                <UserButton
+                  mode="simple"
+                  afterSignOutUrl="/"
+                  showProfile
+                />
+              </SignedIn>
+
+            </>
+          )}
         </div>
       </div>
     </header>
