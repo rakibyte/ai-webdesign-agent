@@ -1,10 +1,12 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { Suspense } from "react";
+import ChatInterface from "@/components/chat";
 
 export default function Home() {
   return (
-   <Button>
-    Click Me
-   </Button>
+    <div>
+      <Suspense fallback={<div className="min-h-screen" />}>
+        <ChatInterface isProjectPage={false} />
+      </Suspense>
+    </div>
   );
 }
