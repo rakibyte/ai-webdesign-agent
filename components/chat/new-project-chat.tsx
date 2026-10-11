@@ -1,121 +1,134 @@
 "use client";
 
-import React from "react";
-import type { ChatStatus } from "ai";
-import { Sparkles } from "lucide-react";
-import {
-  PromptInput,
-  PromptInputBody,
-  PromptInputFooter,
-  PromptInputTextarea,
-  PromptInputTools,
-  PromptInputSubmit,
-  PromptInputActionMenu,
-  PromptInputActionMenuTrigger,
-  PromptInputActionMenuContent,
-  PromptInputActionAddAttachments,
-  PromptInputActionAddScreenshot,
-  type PromptInputMessage,
-} from "@/components/ai-elements/prompt-input";
-import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
+import React from 'react'
+import { PromptInputMessage } from '../ai-elements/prompt-input';
+import type { ChatStatus } from 'ai';
+import {motion} from 'motion/react';
+import { Suggestion, Suggestions } from '../ai-elements/suggestion';
+import ChatInput from './chat-input';
 
-export interface NewProjectChatProps {
-  input: string;
-  setInput: (value: string) => void;
+type PropsType={
+  input:string;
   isLoading: boolean;
-  status: ChatStatus;
-  onStop: () => void;
-  onSubmit: (message: PromptInputMessage, options?: any) => Promise<void> | void;
+  status:ChatStatus;
+  setInput:(input:string)=>void;
+  onStop:()=>void;
+  onSubmit:(message:PromptInputMessage,options?:Record<string, unknown>)=>void;
 }
 
-const sampleSuggestions = [
-  "Build a SaaS landing page for an AI productivity app with modern Bento grid",
-  "Design a dark-themed portfolio website with subtle animations and case studies",
-  "Create an e-commerce storefront with product cards, cart preview, and clean filters",
-  "Build a modern developer documentation site with syntax highlighting and sidebar",
-];
 
-export const NewProjectChat: React.FC<NewProjectChatProps> = ({
-  input,
-  setInput,
-  status,
-  onStop,
-  onSubmit,
-}) => {
-  const handleSuggestionClick = (suggestion: string) => {
-    setInput(suggestion);
+const NewProjectChat = ({
+input,
+isLoading,
+status,
+setInput,
+onStop,
+onSubmit
+
+}:PropsType) => {
+
+  const suggestions = [
+    {
+      label: "Modern HR SaaS Landing Page",
+      value: "A clean, high-conversion B2B SaaS landing page for an HR and Payroll platform. The color palette features a vibrant royal blue primary color, bright yellow accent for CTA buttons, and alternating solid blue and ultra-light gray background sections. The hero section must have a solid blue background with a faint grid mesh, centered bold typography, and a massive overlapping 'bento-style' composition of floating white UI dashboard cards showing mock payroll data and SVG charts. Include a 3-column bento grid for features with mini UI elements, a 2-column section with a stylized SVG globe, a horizontal timeline-based pricing section on a blue background, a 3-column testimonials grid, and a massive bright yellow rounded CTA banner nested just above a clean footer."
+    },
+    {
+      label: "AI SaaS Landing Page",
+      value: "A cutting-edge landing page for an autonomous AI workflow platform. Deep space dark mode with vibrant indigo radial light-leaks, floating glassmorphic navbar, hero with glowing gradient text, bento grid showcasing features, and sleek pricing section."
+    },
+    {
+      label: "B2B SaaS Landing",
+      value: "A serious B2B SaaS marketing site with structured hero, client logos strip (Vercel, Linear, Notion, Stripe), feature sections with diagrams, data visualization preview, pricing tiers, FAQ accordion, and enterprise call-to-action. Clear hierarchy and strong spacing rhythm."
+    },
+    {
+      label: "Sales Landing",
+      value: "A high-contrast, modern B2B SaaS Sales landing page. The theme uses a crisp white background, deep navy/purple-black for inverted containers, and a vibrant Lime Green primary accent. The Hero features a bold H1 with an inline circular icon, next to a floating composition of white and lime-green UI dashboard cards with SVG bar charts. Below the hero is a massive, dark navy rounded-3xl container housing a 2x2 features grid with pill-shaped badges. Follow this with a complex 3-row white bento grid showcasing UI mockups (SVG maps, bar charts, and an overlapping dark stat card). Include a 'How it Works' section with a vertical numbered timeline alongside overlapping login UI mockups. Finish with a dark navy 3-column pricing container and a bright lime-green rounded CTA banner just above a clean, light footer."
+    },
+    {
+      label: "FinTech Landing",
+      value: "A Dribbble-quality landing page for a modern global payments app. The theme alternates between a deep, dark forest/emerald green and pristine white. The primary accent color is a vibrant neon Emerald Green. The Hero section is dark mode with an emerald radial light-leak, featuring a centered massive H1, a floating UI card representing a mobile banking interface, and smaller glassmorphic pill badges floating around it (e.g., 'Total Balance'). Follow this with a pristine white section containing a muted partner logo cloud, a 6-card bento grid for features with green icons, and two 2-column split sections matching text/checklists against large floating white UI cards. Include a dark-mode pricing section with 3 glassmorphic cards and emerald accents, a white testimonials grid, and a massive dark-green rounded CTA card with an inner radial glow placed just above a sleek, dark-mode footer."
+    },
+    {
+      label: "Crypto Exchange",
+      value: "A futuristic trading interface for a crypto exchange called 'Apex'. Deep midnight background with electric blue glows. Central trading chart with candlesticks, left order book panel, right trade history, top navbar with BTC $67,432 ETH $3,241 live prices, and glowing buy/sell buttons."
+    },
+    {
+      label: "Payment Platform",
+      value: "A high-conversion landing page for a payment link product. Strong hero with 'Accept Payments Instantly' headline, live payment preview mockup on the right, trust badges, feature grid explaining no-code checkout, use-case sections (Creators, SaaS, Freelancers), pricing comparison, and a bold CTA. Clean fintech-grade design."
+    },
+    {
+      label: "Neobank Website",
+      value: "A modern neobank marketing website. Confident hero with app preview, trust metrics row showing '2M+ users', '$4.2B processed', debit card showcase section, feature breakdown grid, comparison table vs traditional banks, testimonials, and strong sign-up CTA."
+    },
+  ];
+
+
+  const handleSuggestionClick = (value: string) => {
+    setInput(value);
   };
 
+
+
   return (
-    <div className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl space-y-8 text-center">
-        {/* Hero header */}
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary shadow-xs">
-            <Sparkles className="size-3.5" />
-            <span>AI-Powered Web Design & Generation</span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            What do you want to{" "}
-            <span className="bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              create
-            </span>{" "}
-            today?
-          </h1>
-          <p className="text-sm text-muted-foreground sm:text-base">
-            Turn your ideas into clean, fully-functional websites and UI components instantly.
-          </p>
-        </div>
-
-        {/* Prompt Input Container */}
-        <div className="rounded-2xl border border-border/80 bg-card p-2 shadow-xl shadow-black/5 dark:shadow-none">
-          <PromptInput
-            onSubmit={onSubmit}
-            className="rounded-xl border-none shadow-none"
+    <div className='w-full relative min-h-screen'>
+      <div className="w-full max-w-7xl mx-auto">
+        <div className="flex flex-col justify-center items-center">
+          <motion.h1 
+          initial={{opacity:0,y:20}}
+          animate={{opacity:1,y:0}}
+          transition={{delay: 0.1}}
+          className='font-serif text-4xl sm:text-5xl md:text-6xl xl:text-7xl text-center mb-4 tracking-tight'
           >
-            <PromptInputBody>
-              <PromptInputTextarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Describe your website or paste a reference..."
-                className="min-h-24 resize-none border-none bg-transparent px-3 py-2 text-sm shadow-none focus-visible:ring-0 sm:text-base"
-              />
-            </PromptInputBody>
-            <PromptInputFooter className="flex items-center justify-between border-t border-border/40 px-2 pt-2">
-              <PromptInputTools>
-                <PromptInputActionMenu>
-                  <PromptInputActionMenuTrigger />
-                  <PromptInputActionMenuContent>
-                    <PromptInputActionAddAttachments />
-                    <PromptInputActionAddScreenshot />
-                  </PromptInputActionMenuContent>
-                </PromptInputActionMenu>
-              </PromptInputTools>
-              <PromptInputSubmit status={status} onStop={onStop} />
-            </PromptInputFooter>
-          </PromptInput>
+            Design your website with AI
+          </motion.h1>
+          <motion.p 
+          initial={{opacity:0}}
+          animate={{opacity:1}}
+          transition={{delay: 0.2}}
+          className='text-muted-foreground text-lg mb-4 text-center max-w-lg'
+          >
+            Describe your vision, and watch Sleek transform your ideas into a stunning web design 
+          </motion.p>
+          <motion.div 
+          initial={{opacity:0, y:20}}
+          animate={{opacity:1,y:0}}
+          transition={{delay: 0.3}}
+          className='w-full max-w-2xl mb-4'
+          >
+            <ChatInput
+              input={input}
+              isLoading={isLoading}
+              status={status}
+              setInput={setInput}
+              onStop={onStop}
+              onSubmit={onSubmit}
+            />
+          </motion.div>
+          <motion.div 
+          initial={{opacity:0, y:20}}
+          animate={{opacity:1,y:0}}
+          transition={{delay: 0.3}}
+          className='w-full max-w-3xl'
+          >
+            <Suggestions className="justify-center flex-wrap">
+              {suggestions.map((item) => (
+                <Suggestion 
+                key={item.value}
+                suggestion={item.value}
+                onClick={()=>handleSuggestionClick(item.value)}>
+                  {item.label}
+                </Suggestion>
+              ))}
+            </Suggestions>
+              
+          </motion.div>
+
         </div>
 
-        {/* Suggestions */}
-        <div className="space-y-2 text-left">
-          <p className="text-xs font-medium text-muted-foreground">Try asking:</p>
-          <Suggestions className="flex-wrap justify-center gap-2">
-            {sampleSuggestions.map((suggestion) => (
-              <Suggestion
-                key={suggestion}
-                suggestion={suggestion}
-                onClick={handleSuggestionClick}
-                className="max-w-md truncate text-xs"
-              >
-                {suggestion}
-              </Suggestion>
-            ))}
-          </Suggestions>
-        </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const NewChat = NewProjectChat;
 export default NewProjectChat;

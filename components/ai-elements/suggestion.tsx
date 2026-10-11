@@ -15,17 +15,26 @@ export const Suggestions = ({
   className,
   children,
   ...props
-}: SuggestionsProps) => (
-  <ScrollArea className="w-full overflow-x-auto whitespace-nowrap" {...props}>
-    <div className={cn("flex w-max flex-nowrap items-center gap-2", className)}>
-      {children}
-    </div>
-    <ScrollBar className="hidden" orientation="horizontal" />
-  </ScrollArea>
-);
+}: SuggestionsProps) => {
+  const isWrap = typeof className === "string" && className.includes("flex-wrap");
+  return (
+    <ScrollArea className="w-full overflow-x-auto whitespace-nowrap" {...props}>
+      <div
+        className={cn(
+          "flex flex-nowrap items-center gap-2",
+          !isWrap && "w-max flex-nowrap",
+          className
+        )}
+      >
+        {children}
+      </div>
+      <ScrollBar className="hidden" orientation="horizontal" />
+    </ScrollArea>
+  );
+};
 
 export type SuggestionProps = Omit<ComponentProps<typeof Button>, "onClick"> & {
-  suggestion: string;
+  suggestion?: string;
   onClick?: (suggestion: string) => void;
 };
 
@@ -39,8 +48,8 @@ export const Suggestion = ({
   ...props
 }: SuggestionProps) => {
   const handleClick = useCallback(() => {
-    onClick?.(suggestion);
-  }, [onClick, suggestion]);
+    onClick?.(suggestion ?? (typeof children === "string" ? children : ""));
+  }, [onClick, suggestion, children]);
 
   return (
     <Button
