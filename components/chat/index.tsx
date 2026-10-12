@@ -10,7 +10,7 @@ import NewProjectChat from "@/components/chat/new-project-chat";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import ChatPanel from "@/components/chat/chat-panel";
-import Canvas from "@/components/chat/canvas";
+import Canvas from "@/components/chat/canvas/canvas";
 import { PageType } from "@/types/project";
 import { useQuery } from "@tanstack/react-query";
 import { useCanvas } from "@/hooks/use-canvas";

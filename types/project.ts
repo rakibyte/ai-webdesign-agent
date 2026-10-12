@@ -1,9 +1,12 @@
 export type PageType = {
   id: string;
   name: string;
-  slug?: string;
-  content?: string;
-  [key: string]: unknown;
+  rootStyles: string;
+  htmlContent: string;
+  isLoading: boolean;
+  projectId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type ProjectType = {
@@ -11,5 +14,5 @@ export type ProjectType = {
   slugId?: string;
   title?: string;
   pages?: PageType[];
-  [key: string]: unknown;
+  messages?: unknown[];
 };
