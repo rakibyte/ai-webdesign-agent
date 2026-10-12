@@ -1,15 +1,15 @@
 import { ChatStatus, UIMessage } from 'ai';
 import React from 'react'
-import { PromptInputMessage } from '../ai-elements/prompt-input';
-import { Conversation, ConversationContent, ConversationEmptyState } from '../ai-elements/conversation';
-import ChatInput from './chat-input';
-import { Skeleton } from '../ui/skeleton';
-import { Message, MessageContent, MessageResponse } from '../ai-elements/message';
-import { Attachment, AttachmentPreview, Attachments } from '../ai-elements/attachments';
-import { Loader } from '../ui/loader';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { PromptInputMessage } from '@/components/ai-elements/prompt-input';
+import { Conversation, ConversationContent, ConversationEmptyState } from '@/components/ai-elements/conversation';
+import ChatInput from '@/components/chat/chat-input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message';
+import { Attachment, AttachmentPreview, Attachments } from '@/components/ai-elements/attachments';
+import { Loader } from '@/components/ui/loader';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircleIcon, CheckCircle2, Circle } from 'lucide-react';
-import { Spinner } from '../ui/spinner';
+import { Spinner } from '@/components/ui/spinner';
 import { PageType } from '@/types/project';
 
 type PropsType = {
