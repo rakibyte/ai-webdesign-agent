@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { SignIn, SignUp, useAuth } from '@insforge/nextjs';
 import {
   Dialog,
@@ -12,30 +12,30 @@ interface AuthModalProps {
   mode?: 'sign-in' | 'sign-up';
   triggerText?: string;
   triggerVariant?: 'default' | 'outline' | 'secondary' | 'ghost';
+  triggerSize?: 'default' | 'sm' | 'lg' | 'icon';
+  className?: string;
 }
 
 export function AuthModal({
   mode = 'sign-in',
   triggerText,
   triggerVariant = 'outline',
+  triggerSize = 'default',
+  className,
 }: AuthModalProps) {
   const [open, setOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>(mode);
   const { isSignedIn } = useAuth();
 
-  // Close modal when user signs in successfully
-  useEffect(() => {
-    if (isSignedIn && open) {
-      setOpen(false);
-    }
-  }, [isSignedIn, open]);
-
+  const isModalOpen = open && !isSignedIn;
   const defaultText = authMode === 'sign-in' ? 'Login' : 'Sign up';
 
   return (
     <>
       <Button
         variant={triggerVariant}
+        size={triggerSize}
+        className={className}
         onClick={() => {
           setAuthMode(mode);
           setOpen(true);
@@ -44,7 +44,7 @@ export function AuthModal({
         {triggerText || defaultText}
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={isModalOpen} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[440px] p-6 max-h-[90vh] overflow-y-auto">
           {authMode === 'sign-in' ? (
             <div>
