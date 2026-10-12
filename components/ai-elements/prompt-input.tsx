@@ -421,7 +421,7 @@ export const PromptInputActionAddAttachments = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    (e: any) => {
+    (e: Parameters<NonNullable<ComponentProps<typeof DropdownMenuItem>["onSelect"]>>[0]) => {
       e.preventDefault();
       attachments.openFileDialog();
     },
@@ -449,7 +449,7 @@ export const PromptInputActionAddScreenshot = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    async (event: any) => {
+    async (event: Parameters<NonNullable<ComponentProps<typeof DropdownMenuItem>["onSelect"]>>[0]) => {
       onSelect?.(event);
       if (event.defaultPrevented) {
         return;
@@ -862,6 +862,7 @@ export const PromptInput = ({
       try {
         // Convert blob URLs to data URLs asynchronously
         const convertedFiles: FileUIPart[] = await Promise.all(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           files.map(async ({ id: _id, ...item }) => {
             if (item.url?.startsWith("blob:")) {
               const dataUrl = await convertBlobUrlToDataUrl(item.url);
@@ -1232,7 +1233,7 @@ export const PromptInputSubmit = ({
   }
 
   const handleClick = useCallback(
-    (e: any) => {
+    (e: Parameters<NonNullable<ComponentProps<typeof InputGroupButton>["onClick"]>>[0]) => {
       if (isGenerating && onStop) {
         e.preventDefault();
         onStop();

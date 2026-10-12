@@ -8,8 +8,7 @@ import { Message, MessageContent, MessageResponse } from '../ai-elements/message
 import { Attachment, AttachmentPreview, Attachments } from '../ai-elements/attachments';
 import { Loader } from '../ui/loader';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { AlertCircle, AlertCircleIcon, CheckCircle2, CheckIcon, Circle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { AlertCircleIcon, CheckCircle2, Circle } from 'lucide-react';
 import { Spinner } from '../ui/spinner';
 import { PageType } from '@/types/project';
 
@@ -22,9 +21,9 @@ type PropsType = {
   messages: UIMessage[];
   error?: Error;
   onStop: () => void;
-  onSubmit: (message: PromptInputMessage, options?: any) => void;
+  onSubmit: (message: PromptInputMessage, options?: Record<string, unknown>) => void;
   status: ChatStatus;
-  selectedPage?: PageType
+  selectedPage?: PageType;
 }
 
 const ChatPanel = ({
@@ -52,13 +51,13 @@ const ChatPanel = ({
             </div>
           ) : messages.length === 0 ? (
             <ConversationEmptyState />
-          ) : messages?.map((message, msgIndex) => {
+          ) : messages?.map((message) => {
             const attachmentsFromMessage = message.parts.filter(
               (part) => part.type === "file"
             )
             return (
-              <>
-                <Message from={message.role} key={message.id}>
+              <React.Fragment key={message.id}>
+                <Message from={message.role}>
                   <MessageContent className="text-[14.5px]">
                     {attachmentsFromMessage.length > 0 && (
                       <Attachments variant="grid">
@@ -90,17 +89,25 @@ const ChatPanel = ({
                               </MessageResponse>
                             </div>
                           )
-                        case "data-generation":
-                          const data = (part as any).data;
+                        case "data-generation": {
+                          const data = (part as unknown as {
+                            data: {
+                              status: 'analyzing' | 'generating' | 'regenerating' | 'canceled' | 'complete' | 'error';
+                              pages: { id: string; name: string; done: boolean }[];
+                              regeneratePage: { id: string; name: string; done: boolean };
+                              currentPageId?: string;
+                            };
+                          }).data;
                           return (
                             <GenerationCard
                               key={`${message.id}-gen-${i}`}
-                              status={data.status}
-                              pages={data.pages}
-                              currentPageId={data.currentPageId}
-                              regeneratePage={data.regeneratePage}
+                              status={data?.status || 'generating'}
+                              pages={data?.pages || []}
+                              currentPageId={data?.currentPageId}
+                              regeneratePage={data?.regeneratePage}
                             />
-                          )
+                          );
+                        }
 
                         default:
                           return null;
@@ -108,7 +115,7 @@ const ChatPanel = ({
                     })}
                   </MessageContent>
                 </Message>
-              </>
+              </React.Fragment>
             )
           })}
 

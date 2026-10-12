@@ -8,7 +8,13 @@ export interface HoverCardProps extends PreviewCardPrimitive.Root.Props {
   closeDelay?: number
 }
 
-function HoverCard({ openDelay, closeDelay, ...props }: HoverCardProps) {
+function HoverCard({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  openDelay: _openDelay,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  closeDelay: _closeDelay,
+  ...props
+}: HoverCardProps) {
   return <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />
 }
 

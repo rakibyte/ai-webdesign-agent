@@ -64,118 +64,118 @@ const ChatInterface = ({
       }
     }),
     onData(dataPart) {
-      const part = dataPart as any;
-      const data = part.data
+      const part = dataPart as { type: string; data: Record<string, unknown> };
+      const data = part.data;
 
       switch (part.type) {
         case "data-project-title": {
-          if (data.title) setProjectTitle(data.title)
-          break
+          const projectTitleData = data as { title?: string };
+          if (projectTitleData.title) setProjectTitle(projectTitleData.title);
+          break;
         }
         case "data-pages-skeleton": {
-          const newPages = (data?.pages || []).map((page: any) => ({
+          const skeletonData = data as { pages?: PageType[] };
+          const newPages = (skeletonData.pages || []).map((page) => ({
             id: page.id,
             name: page.name,
             rootStyles: page.rootStyles,
             htmlContent: "",
-            isLoading: true
-          }))
+            isLoading: true,
+          }));
           setPages((prev) => {
-            const existingIds = new Set(prev.map(p => p.id));
-            const toAdd = newPages.filter((p: any) => !existingIds.has(p.id));
-            return [...prev, ...toAdd]
-          })
+            const existingIds = new Set(prev.map((p) => p.id));
+            const toAdd = newPages.filter((p) => !existingIds.has(p.id));
+            return [...prev, ...toAdd];
+          });
           break;
         }
 
         case "data-page-created": {
-          const page = data.page
-          const tempId = data.tempId
+          const createdData = data as { page: PageType; tempId?: string };
+          const page = createdData.page;
+          const tempId = createdData.tempId;
           setPages((prev) => {
-            const idx = prev.findIndex(p => p.id === tempId ||
-              p.id === page.id
-            )
+            const idx = prev.findIndex(
+              (p) => p.id === tempId || p.id === page.id
+            );
             if (idx !== -1) {
               const updated = [...prev];
               updated[idx] = {
                 ...page,
-                isLoading: false
+                isLoading: false,
               };
               return updated;
             }
-            return [...prev, {
-              ...page,
-              isLoading: false
-            }]
-          })
+            return [...prev, { ...page, isLoading: false }];
+          });
           break;
         }
 
         case "data-page-loading": {
-          const pageId = data.pageId;
-          setPages(prev => {
-            const idx = prev.findIndex(p => p.id === pageId);
+          const loadingData = data as { pageId: string };
+          const pageId = loadingData.pageId;
+          setPages((prev) => {
+            const idx = prev.findIndex((p) => p.id === pageId);
             if (idx !== -1) {
               const updated = [...prev];
               updated[idx] = {
                 ...updated[idx],
-                isLoading: true
+                isLoading: true,
               };
               return updated;
             }
-            return prev
+            return prev;
           });
           break;
         }
       }
     },
     onError: (error) => {
-      console.log(error)
-      toast.error("Failed to generate response")
-    }
-  })
+      console.log(error);
+      toast.error("Failed to generate response");
+    },
+  });
 
   // Sync messages when data is initially loaded
   // We use a ref to track the last synced slugId to ensure we only sync once per project,
   const lastSyncedSlug = useRef<string | null>(null);
 
   useEffect(() => {
-      if (projectData && slugId !== lastSyncedSlug.current) {
-          if (projectData.messages) setMessages(projectData.messages);
-          if (projectData.pages) setPages(projectData.pages);
-          lastSyncedSlug.current = slugId;
-      }
+    if (projectData && slugId !== lastSyncedSlug.current) {
+      lastSyncedSlug.current = slugId;
+      if (projectData.messages) setMessages(projectData.messages);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (projectData.pages) setPages(projectData.pages);
+    }
   }, [projectData, slugId, setMessages]);
-
 
   useEffect(() => {
     const checkReset = () => {
       if (window.location.pathname === "/" && (hasStarted || isProjectPage)) {
         setSlugId(generateSlugId());
-        setMessages([])
-        setHasStarted(false)
-        setProjectTitle(null)
+        setMessages([]);
+        setHasStarted(false);
+        setProjectTitle(null);
       }
-    }
+    };
 
-    window.addEventListener("popstate", checkReset)
+    window.addEventListener("popstate", checkReset);
 
     if (pathname === "/" && hasStarted) {
-      checkReset()
+      checkReset();
     }
 
-    return () => window.removeEventListener("popstate",
-      checkReset
-    )
-  }, [pathname, hasStarted, isProjectPage, setMessages])
+    return () => window.removeEventListener("popstate", checkReset);
+  }, [pathname, hasStarted, isProjectPage, setMessages]);
 
+  const { selectedPageId } = useCanvas();
 
+  const isLoading = status === "submitted" || status === "streaming";
 
-  const { selectedPageId } = useCanvas()
-
-  const isLoading = status === "submitted" || status === "streaming"
-
-  const onSubmit = async (message: PromptInputMessage, options: any = {}) => {
+  const onSubmit = async (
+    message: PromptInputMessage,
+    options: Record<string, unknown> = {}
+  ) => {
 
     if (!message.text.trim()) {
       toast.error("Please enter a message")
@@ -184,7 +184,8 @@ const ChatInterface = ({
 
     if (!isProjectPage && !hasStarted) {
       window.history.pushState(null, "", `/project/${slugId}`);
-      setHasStarted(true)
+      window.dispatchEvent(new Event("pushstate"));
+      setHasStarted(true);
     }
 
     sendMessage(
@@ -232,31 +233,25 @@ const ChatInterface = ({
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      <div className="flex relative w-full max-w-md border-r
-      border-border
-      ">
-        {/* {ProjectTitle} */}
-        <div className="w-full absolute left-0 top-0 z-10 pb-2
-        bg-background
-        ">
-          <div role="button"
-            className="flex items-center gap-2 cursor-pointer!"
+      <div className="flex flex-col relative w-full max-w-md border-r border-border">
+        {/* ProjectTitle Bar */}
+        <div className="w-full absolute left-0 top-0 z-10 px-3 py-2 bg-background/95 backdrop-blur-sm border-b">
+          <div
+            role="button"
+            className="flex items-center gap-2 cursor-pointer"
             onClick={handleBack}
           >
-            <Button variant="secondary"
-              size="icon"
-            >
-              <ArrowLeft />
+            <Button variant="ghost" size="icon" className="size-8">
+              <ArrowLeft className="size-4" />
             </Button>
-            <h5 className="font-semibold tracking-tight
-            truncate pr-4">
+            <h5 className="font-semibold tracking-tight truncate pr-4 text-sm">
               {projectTitle || projectData?.title || "Untitled Project"}
             </h5>
           </div>
         </div>
 
         <ChatPanel
-          className="h-full pt-8"
+          className="h-full pt-14"
           messages={messages}
           input={input}
           setInput={setInput}

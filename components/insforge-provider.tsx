@@ -1,5 +1,5 @@
 'use client';
-import { InsforgeBrowserProvider, type InitialAuthState } from '@insforge/nextjs';
+import { InsforgeBrowserProvider } from '@insforge/nextjs';
 import { insforge } from '@/lib/insforge-client';
 
 export function InsforgeProvider({ children }: { children: React.ReactNode }) {
